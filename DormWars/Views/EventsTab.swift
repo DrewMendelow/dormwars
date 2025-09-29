@@ -156,7 +156,7 @@ struct EventsTab: View {
                     .padding(.vertical, 32)
                 }
                 .onAppear {
-                    api.fetchEvents { result in
+                    api.getEvents { result in
                         DispatchQueue.main.async {
                             switch result {
                             case .success(let events):

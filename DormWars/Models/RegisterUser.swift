@@ -4,7 +4,7 @@
 //
 //  Created by Drew Mendelow on 9/27/25.
 //
-class RegisterUser {
+class RegisterUser: Codable {
     var registerUserId: Int
     var eventTeam: EventTeam
     var user: User
