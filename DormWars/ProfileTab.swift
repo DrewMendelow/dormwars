@@ -11,6 +11,8 @@ import SwiftData
 struct ProfileTab: View {
     var body: some View {
         Text("Profile Tab")
+            .font(Font.largeTitle)
+            .bold(true)
     }
 }
 
