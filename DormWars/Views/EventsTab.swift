@@ -8,34 +8,37 @@
 import SwiftUI
 import SwiftData
 
-struct Event: Identifiable {
-    let id = UUID()
-    let title: String
-    let date: String
-    let description: String
-    let location: String
-    let details: String
-    let category: String
-}
-
 struct EventsTab: View {
     @State private var searchText: String = ""
     @State private var filterCategory: String = "All"
     @State private var selectedEvent: Event?
+    @State private var events: [Event] = []
+    @State private var buttonText = "Call Api"
+    let api = APIService()
 
     let categories = ["All", "Tournament", "Game"]
 
-    let events = [
-        Event(title: "Soccer", date: "Sep 30", description: "Glenn Versus Towers", location: "Tech Green", details: "Soccer finals with tons of hype and support. Bring your dorm spirit!", category: "Game"),
-        Event(title: "Basketball Tournament", date: "Oct 6", description: "North Ave vs. Smith Hall Semi-Finals", location: "Campus Rec Center", details: "Semi-finals of the biggest basketball showdown in DormWars history.", category: "Tournament"),
-        Event(title: "Ultimate Frisbee", date: "Oct 13", description: "Open play for all skill levels", location: "Burger Bowl Field", details: "A fun, casual game for all. No experience needed, just bring energy!", category: "Game"),
-        Event(title: "Flag Football Finals", date: "Oct 21", description: "Championship game for all-residence hall league", location: "Bobby Dodd Stadium Practice Field", details: "Championship final for ultimate bragging rights.", category: "Game")
-    ]
+//    let events = [
+//        DisplayEvent(title: "Soccer", date: "Sep 30", description: "Glenn Versus Towers", location: "Tech Green", details: "Soccer finals with tons of hype and support. Bring your dorm spirit!", category: "Game"),
+//        DisplayEvent(title: "Basketball Tournament", date: "Oct 6", description: "North Ave vs. Smith Hall Semi-Finals", location: "Campus Rec Center", details: "Semi-finals of the biggest basketball showdown in DormWars history.", category: "Tournament"),
+//        DisplayEvent(title: "Ultimate Frisbee", date: "Oct 13", description: "Open play for all skill levels", location: "Burger Bowl Field", details: "A fun, casual game for all. No experience needed, just bring energy!", category: "Game"),
+//        DisplayEvent(title: "Flag Football Finals", date: "Oct 21", description: "Championship game for all-residence hall league", location: "Bobby Dodd Stadium Practice Field", details: "Championship final for ultimate bragging rights.", category: "Game")
+//    ]
 
     var filteredEvents: [Event] {
         events.filter { event in
-            (filterCategory == "All" || event.category == filterCategory) &&
-            (searchText.isEmpty || event.title.localizedCaseInsensitiveContains(searchText))
+            let categoryMatches: Bool = {
+                switch filterCategory {
+                case "Tournament":
+                    return event.isTournamentGame
+                case "Game":
+                    return !event.isTournamentGame
+                default:
+                    return true
+                }
+            }()
+            let searchMatches = searchText.isEmpty || event.shortDescription.localizedCaseInsensitiveContains(searchText) || event.longDescription.localizedCaseInsensitiveContains(searchText)
+            return categoryMatches && searchMatches
         }
     }
 
@@ -84,7 +87,7 @@ struct EventsTab: View {
                         .padding(.horizontal)
 
                         // MARK: - Event Cards
-                        ForEach(filteredEvents) { event in
+                        ForEach(events, id: \.eventId) { event in
                             VStack(spacing: 0) {
                                 // Top Bar
                                 ZStack {
@@ -99,7 +102,7 @@ struct EventsTab: View {
                                         .cornerRadius(20, corners: [.topLeft, .topRight])
 
                                     HStack {
-                                        Text(event.title)
+                                        Text(event.eventName)
                                             .font(.title2.bold())
                                             .foregroundColor(.white)
                                             .padding(.horizontal)
@@ -111,14 +114,18 @@ struct EventsTab: View {
                                 // Card Content
                                 VStack(alignment: .leading, spacing: 12) {
                                     HStack(spacing: 8) {
-                                        Label(event.date, systemImage: "calendar")
-                                            .font(.subheadline)
-                                            .padding(.horizontal, 10)
-                                            .padding(.vertical, 6)
-                                            .background(Color.orange.opacity(0.15))
-                                            .cornerRadius(10)
+                                        Label {
+                                            Text(event.datetime.formatted(date: .abbreviated, time: .shortened))
+                                        } icon: {
+                                            Image(systemName: "calendar")
+                                        }
+                                        .font(.subheadline)
+                                        .padding(.horizontal, 10)
+                                        .padding(.vertical, 6)
+                                        .background(Color.orange.opacity(0.15))
+                                        .cornerRadius(10)
 
-                                        Label(event.location, systemImage: "mappin.and.ellipse")
+                                        Label(event.location ?? "TBD", systemImage: "mappin.and.ellipse")
                                             .font(.subheadline)
                                             .padding(.horizontal, 10)
                                             .padding(.vertical, 6)
@@ -126,7 +133,7 @@ struct EventsTab: View {
                                             .cornerRadius(10)
                                     }
 
-                                    Text(event.description)
+                                    Text(event.shortDescription)
                                         .font(.body)
                                         .foregroundColor(.black)
                                         .lineLimit(3)
@@ -147,6 +154,18 @@ struct EventsTab: View {
                         }
                     }
                     .padding(.vertical, 32)
+                }
+                .onAppear {
+                    api.getEvents { result in
+                        DispatchQueue.main.async {
+                            switch result {
+                            case .success(let events):
+                                self.events = events
+                            case .failure(let error):
+                                print("Error fetching events:", error)
+                            }
+                        }
+                    }
                 }
 
                 // MARK: - Event Detail Overlay
@@ -187,21 +206,25 @@ struct EventsTab: View {
                             }
 
                             VStack(alignment: .leading, spacing: 18) {
-                                Text(event.title)
+                                Text(event.eventName)
                                     .font(.title.bold())
                                     .padding(.bottom, 4)
 
                                 HStack(spacing: 12) {
-                                    Label(event.date, systemImage: "calendar")
-                                        .font(.subheadline)
-                                    Label(event.location, systemImage: "mappin.and.ellipse")
+                                    Label {
+                                        Text(event.datetime.formatted(date: .abbreviated, time: .shortened))
+                                    } icon: {
+                                        Image(systemName: "calendar")
+                                    }
+                                    .font(.subheadline)
+                                    Label(event.location ?? "TBD", systemImage: "mappin.and.ellipse")
                                         .font(.subheadline)
                                 }
                                 .foregroundColor(.gray)
 
                                 Divider()
 
-                                Text(event.details)
+                                Text(event.longDescription)
                                     .font(.body)
                                     .padding(.vertical)
 
@@ -258,3 +281,4 @@ struct RoundedCorner: Shape {
     EventsTab()
         .modelContainer(for: Item.self, inMemory: true)
 }
+
