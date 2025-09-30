@@ -8,6 +8,7 @@
 import Foundation
 
 class Event: Codable {
+    
     var eventId: Int
     var location: String?
     var datetime: Date
