@@ -8,10 +8,10 @@
 import Foundation
 
 class APIService {
-    let baseURL = URL(string: "http://localhost:8080/api/")!
+    static let baseURL = URL(string: "https://dormwarsapi.onrender.com/api/")!
 
     // MARK: - Event
-    func getEvents(completion: @escaping (Result<[Event], Error>) -> Void) {
+    static func getEvents(completion: @escaping (Result<[Event], Error>) -> Void) {
         let url = baseURL.appendingPathComponent("events")
 
         URLSession.shared.dataTask(with: url) { data, _, error in
@@ -40,7 +40,7 @@ class APIService {
         }.resume()
     }
 
-    func createEvent(_ event: Event, completion: @escaping (Result<Event, Error>) -> Void) {
+    static func createEvent(_ event: Event, completion: @escaping (Result<Event, Error>) -> Void) {
         let url = baseURL.appendingPathComponent("events")
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
@@ -77,7 +77,7 @@ class APIService {
     }
 
     // MARK: - EventTeam
-    func getEventTeams(completion: @escaping (Result<[EventTeam], Error>) -> Void) {
+    static func getEventTeams(completion: @escaping (Result<[EventTeam], Error>) -> Void) {
         let url = baseURL.appendingPathComponent("event-teams")
         
         URLSession.shared.dataTask(with: url) { data, _, error in
@@ -99,7 +99,7 @@ class APIService {
         }.resume()
     }
 
-    func createEventTeam(_ eventTeam: EventTeam, completion: @escaping (Result<EventTeam, Error>) -> Void) {
+    static func createEventTeam(_ eventTeam: EventTeam, completion: @escaping (Result<EventTeam, Error>) -> Void) {
         let url = baseURL.appendingPathComponent("event-teams")
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
@@ -133,7 +133,7 @@ class APIService {
     }
 
     // MARK: - RegisterUser
-    func getRegisterUsers(completion: @escaping (Result<[RegisterUser], Error>) -> Void) {
+    static func getRegisterUsers(completion: @escaping (Result<[RegisterUser], Error>) -> Void) {
         let url = baseURL.appendingPathComponent("registrations")
         
         URLSession.shared.dataTask(with: url) { data, _, error in
@@ -155,7 +155,7 @@ class APIService {
         }.resume()
     }
 
-    func createRegisterUser(_ registerUser: RegisterUser, completion: @escaping (Result<RegisterUser, Error>) -> Void) {
+    static func createRegisterUser(_ registerUser: RegisterUser, completion: @escaping (Result<RegisterUser, Error>) -> Void) {
         let url = baseURL.appendingPathComponent("registrations")
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
@@ -189,7 +189,7 @@ class APIService {
     }
 
     // MARK: - School
-    func getSchools(completion: @escaping (Result<[School], Error>) -> Void) {
+    static func getSchools(completion: @escaping (Result<[School], Error>) -> Void) {
         let url = baseURL.appendingPathComponent("schools")
         
         URLSession.shared.dataTask(with: url) { data, _, error in
@@ -211,7 +211,7 @@ class APIService {
         }.resume()
     }
 
-    func createSchool(_ school: School, completion: @escaping (Result<School, Error>) -> Void) {
+    static func createSchool(_ school: School, completion: @escaping (Result<School, Error>) -> Void) {
         let url = baseURL.appendingPathComponent("schools")
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
@@ -245,7 +245,7 @@ class APIService {
     }
 
     // MARK: - Sport
-    func getSports(completion: @escaping (Result<[Sport], Error>) -> Void) {
+    static func getSports(completion: @escaping (Result<[Sport], Error>) -> Void) {
         let url = baseURL.appendingPathComponent("sports")
         
         URLSession.shared.dataTask(with: url) { data, _, error in
@@ -267,7 +267,7 @@ class APIService {
         }.resume()
     }
 
-    func createSport(_ sport: Sport, completion: @escaping (Result<Sport, Error>) -> Void) {
+    static func createSport(_ sport: Sport, completion: @escaping (Result<Sport, Error>) -> Void) {
         let url = baseURL.appendingPathComponent("sports")
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
@@ -301,7 +301,7 @@ class APIService {
     }
 
     // MARK: - Team
-    func getTeams(completion: @escaping (Result<[Team], Error>) -> Void) {
+    static func getTeams(completion: @escaping (Result<[Team], Error>) -> Void) {
         let url = baseURL.appendingPathComponent("teams")
         
         URLSession.shared.dataTask(with: url) { data, _, error in
@@ -323,7 +323,7 @@ class APIService {
         }.resume()
     }
 
-    func createTeam(_ team: Team, completion: @escaping (Result<Team, Error>) -> Void) {
+    static func createTeam(_ team: Team, completion: @escaping (Result<Team, Error>) -> Void) {
         let url = baseURL.appendingPathComponent("teams")
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
@@ -357,7 +357,7 @@ class APIService {
     }
 
     // MARK: - Tournament
-    func getTournaments(completion: @escaping (Result<[Tournament], Error>) -> Void) {
+    static func getTournaments(completion: @escaping (Result<[Tournament], Error>) -> Void) {
         let url = baseURL.appendingPathComponent("tournaments")
         
         URLSession.shared.dataTask(with: url) { data, _, error in
@@ -379,7 +379,7 @@ class APIService {
         }.resume()
     }
 
-    func createTournament(_ tournament: Tournament, completion: @escaping (Result<Tournament, Error>) -> Void) {
+    static func createTournament(_ tournament: Tournament, completion: @escaping (Result<Tournament, Error>) -> Void) {
         let url = baseURL.appendingPathComponent("tournaments")
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
@@ -413,7 +413,7 @@ class APIService {
     }
 
     // MARK: - User
-    func getUsers(completion: @escaping (Result<[User], Error>) -> Void) {
+    static func getUsers(completion: @escaping (Result<[User], Error>) -> Void) {
         let url = baseURL.appendingPathComponent("users")
         
         URLSession.shared.dataTask(with: url) { data, _, error in
@@ -435,7 +435,7 @@ class APIService {
         }.resume()
     }
 
-    func createUser(_ user: User, completion: @escaping (Result<User, Error>) -> Void) {
+    static func createUser(_ user: User, completion: @escaping (Result<User, Error>) -> Void) {
         let url = baseURL.appendingPathComponent("users")
         var request = URLRequest(url: url)
         request.httpMethod = "POST"

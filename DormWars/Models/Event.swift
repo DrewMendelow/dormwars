@@ -7,7 +7,8 @@
 
 import Foundation
 
-class Event: Codable {
+class Event: Codable, Equatable {
+    
     var eventId: Int
     var location: String?
     var datetime: Date
@@ -41,3 +42,8 @@ class Event: Codable {
     }
 }
 
+extension Event {
+    static func == (lhs: Event, rhs: Event) -> Bool {
+        return lhs.eventId == rhs.eventId
+    }
+}
