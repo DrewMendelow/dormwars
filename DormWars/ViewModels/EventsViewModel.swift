@@ -30,15 +30,3 @@ class EventsViewModel: ObservableObject {
         }
     }
 }
-
-
-//api.getEvents { result in
-//    DispatchQueue.main.async {
-//        switch result {
-//        case .success(let events):
-//            self.events = events
-//        case .failure(let error):
-//            print("Error fetching events:", error)
-//        }
-//    }
-//}
