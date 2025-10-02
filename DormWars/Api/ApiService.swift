@@ -40,7 +40,38 @@ class APIService {
         }.resume()
     }
 
-    static func createEvent(_ event: Event, completion: @escaping (Result<Event, Error>) -> Void) {
+    static func createEvent(
+        datetime: Date,
+        sportId: Int64,
+        isTournamentGame: Bool,
+        status: String,
+        shortDescription: String,
+        longDescription: String,
+        eventName: String,
+        location: String? = nil,
+        winnerId: Int64? = nil,
+        loserId: Int64? = nil,
+        tournamentId: Int64? = nil,
+        roundNumber: Int? = nil,
+        nextEventId: Int64? = nil,
+        completion: @escaping (Result<Event, Error>) -> Void
+    ) {
+        let event = EventRequest(
+            location: location,
+            datetime: datetime,
+            sportId: sportId,
+            isTournamentGame: isTournamentGame,
+            status: status,
+            shortDescription: shortDescription,
+            longDescription: longDescription,
+            winnerId: winnerId,
+            loserId: loserId,
+            tournamentId: tournamentId,
+            roundNumber: roundNumber,
+            nextEventId: nextEventId,
+            eventName: eventName
+        )
+        
         let url = baseURL.appendingPathComponent("events")
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
@@ -99,38 +130,44 @@ class APIService {
         }.resume()
     }
 
-    static func createEventTeam(_ eventTeam: EventTeam, completion: @escaping (Result<EventTeam, Error>) -> Void) {
+    static func createEventTeam(
+        eventId: Int64,
+        teamId: Int64,
+        isTournamentTeam: Bool,
+        active: Bool,
+        tournamentId: Int64? = nil,
+        completion: @escaping (Result<EventTeam, Error>) -> Void
+    ) {
+        let eventTeamReq = EventTeamRequest(
+            eventId: eventId,
+            teamId: teamId,
+            isTournamentTeam: isTournamentTeam,
+            tournamentId: tournamentId,
+            active: active
+        )
+
         let url = baseURL.appendingPathComponent("event-teams")
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        
+
         do {
-            let encoder = JSONEncoder()
-            let body = try encoder.encode(eventTeam)
-            request.httpBody = body
+            request.httpBody = try JSONEncoder().encode(eventTeamReq)
         } catch {
             completion(.failure(error))
             return
         }
-        
+
         URLSession.shared.dataTask(with: request) { data, _, error in
-            if let error = error {
-                completion(.failure(error))
-                return
-            }
-            guard let data = data else {
-                completion(.failure(NSError(domain: "No data", code: -1)))
-                return
-            }
+            if let error = error { completion(.failure(error)); return }
+            guard let data = data else { completion(.failure(NSError(domain: "No data", code: -1))); return }
             do {
                 let created = try JSONDecoder().decode(EventTeam.self, from: data)
                 completion(.success(created))
-            } catch {
-                completion(.failure(error))
-            }
+            } catch { completion(.failure(error)) }
         }.resume()
     }
+
 
     // MARK: - RegisterUser
     static func getRegisterUsers(completion: @escaping (Result<[RegisterUser], Error>) -> Void) {
@@ -155,38 +192,30 @@ class APIService {
         }.resume()
     }
 
-    static func createRegisterUser(_ registerUser: RegisterUser, completion: @escaping (Result<RegisterUser, Error>) -> Void) {
+    static func createRegisterUser(
+        eventTeamId: Int64,
+        userId: Int64,
+        completion: @escaping (Result<RegisterUser, Error>) -> Void
+    ) {
+        let req = RegisterUserRequest(eventTeamId: eventTeamId, userId: userId)
         let url = baseURL.appendingPathComponent("registrations")
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        
-        do {
-            let encoder = JSONEncoder()
-            let body = try encoder.encode(registerUser)
-            request.httpBody = body
-        } catch {
-            completion(.failure(error))
-            return
-        }
-        
+
+        do { request.httpBody = try JSONEncoder().encode(req) }
+        catch { completion(.failure(error)); return }
+
         URLSession.shared.dataTask(with: request) { data, _, error in
-            if let error = error {
-                completion(.failure(error))
-                return
-            }
-            guard let data = data else {
-                completion(.failure(NSError(domain: "No data", code: -1)))
-                return
-            }
+            if let error = error { completion(.failure(error)); return }
+            guard let data = data else { completion(.failure(NSError(domain: "No data", code: -1))); return }
             do {
                 let created = try JSONDecoder().decode(RegisterUser.self, from: data)
                 completion(.success(created))
-            } catch {
-                completion(.failure(error))
-            }
+            } catch { completion(.failure(error)) }
         }.resume()
     }
+
 
     // MARK: - School
     static func getSchools(completion: @escaping (Result<[School], Error>) -> Void) {
@@ -211,38 +240,44 @@ class APIService {
         }.resume()
     }
 
-    static func createSchool(_ school: School, completion: @escaping (Result<School, Error>) -> Void) {
+    static func createSchool(
+        schoolName: String,
+        active: Bool,
+        city: String? = nil,
+        state: String? = nil,
+        primaryColor: String? = nil,
+        secondaryColor: String? = nil,
+        schoolLogo: String? = nil,
+        completion: @escaping (Result<School, Error>) -> Void
+    ) {
+        let req = SchoolRequest(
+            schoolName: schoolName,
+            city: city,
+            state: state,
+            primaryColor: primaryColor,
+            secondaryColor: secondaryColor,
+            schoolLogo: schoolLogo,
+            active: active
+        )
+
         let url = baseURL.appendingPathComponent("schools")
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        
-        do {
-            let encoder = JSONEncoder()
-            let body = try encoder.encode(school)
-            request.httpBody = body
-        } catch {
-            completion(.failure(error))
-            return
-        }
-        
+
+        do { request.httpBody = try JSONEncoder().encode(req) }
+        catch { completion(.failure(error)); return }
+
         URLSession.shared.dataTask(with: request) { data, _, error in
-            if let error = error {
-                completion(.failure(error))
-                return
-            }
-            guard let data = data else {
-                completion(.failure(NSError(domain: "No data", code: -1)))
-                return
-            }
+            if let error = error { completion(.failure(error)); return }
+            guard let data = data else { completion(.failure(NSError(domain: "No data", code: -1))); return }
             do {
                 let created = try JSONDecoder().decode(School.self, from: data)
                 completion(.success(created))
-            } catch {
-                completion(.failure(error))
-            }
+            } catch { completion(.failure(error)) }
         }.resume()
     }
+
 
     // MARK: - Sport
     static func getSports(completion: @escaping (Result<[Sport], Error>) -> Void) {
@@ -267,38 +302,38 @@ class APIService {
         }.resume()
     }
 
-    static func createSport(_ sport: Sport, completion: @escaping (Result<Sport, Error>) -> Void) {
+    static func createSport(
+        sportName: String,
+        playersPerTeam: Int,
+        description: String? = nil,
+        abbreviation: String? = nil,
+        completion: @escaping (Result<Sport, Error>) -> Void
+    ) {
+        let req = SportRequest(
+            sportName: sportName,
+            description: description,
+            abbreviation: abbreviation,
+            playersPerTeam: playersPerTeam
+        )
+
         let url = baseURL.appendingPathComponent("sports")
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        
-        do {
-            let encoder = JSONEncoder()
-            let body = try encoder.encode(sport)
-            request.httpBody = body
-        } catch {
-            completion(.failure(error))
-            return
-        }
-        
+
+        do { request.httpBody = try JSONEncoder().encode(req) }
+        catch { completion(.failure(error)); return }
+
         URLSession.shared.dataTask(with: request) { data, _, error in
-            if let error = error {
-                completion(.failure(error))
-                return
-            }
-            guard let data = data else {
-                completion(.failure(NSError(domain: "No data", code: -1)))
-                return
-            }
+            if let error = error { completion(.failure(error)); return }
+            guard let data = data else { completion(.failure(NSError(domain: "No data", code: -1))); return }
             do {
                 let created = try JSONDecoder().decode(Sport.self, from: data)
                 completion(.success(created))
-            } catch {
-                completion(.failure(error))
-            }
+            } catch { completion(.failure(error)) }
         }.resume()
     }
+
 
     // MARK: - Team
     static func getTeams(completion: @escaping (Result<[Team], Error>) -> Void) {
@@ -323,38 +358,32 @@ class APIService {
         }.resume()
     }
 
-    static func createTeam(_ team: Team, completion: @escaping (Result<Team, Error>) -> Void) {
+    static func createTeam(
+        teamName: String,
+        schoolId: Int64,
+        active: Bool,
+        completion: @escaping (Result<Team, Error>) -> Void
+    ) {
+        let req = TeamRequest(teamName: teamName, schoolId: schoolId, active: active)
+
         let url = baseURL.appendingPathComponent("teams")
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        
-        do {
-            let encoder = JSONEncoder()
-            let body = try encoder.encode(team)
-            request.httpBody = body
-        } catch {
-            completion(.failure(error))
-            return
-        }
-        
+
+        do { request.httpBody = try JSONEncoder().encode(req) }
+        catch { completion(.failure(error)); return }
+
         URLSession.shared.dataTask(with: request) { data, _, error in
-            if let error = error {
-                completion(.failure(error))
-                return
-            }
-            guard let data = data else {
-                completion(.failure(NSError(domain: "No data", code: -1)))
-                return
-            }
+            if let error = error { completion(.failure(error)); return }
+            guard let data = data else { completion(.failure(NSError(domain: "No data", code: -1))); return }
             do {
                 let created = try JSONDecoder().decode(Team.self, from: data)
                 completion(.success(created))
-            } catch {
-                completion(.failure(error))
-            }
+            } catch { completion(.failure(error)) }
         }.resume()
     }
+
 
     // MARK: - Tournament
     static func getTournaments(completion: @escaping (Result<[Tournament], Error>) -> Void) {
@@ -379,38 +408,33 @@ class APIService {
         }.resume()
     }
 
-    static func createTournament(_ tournament: Tournament, completion: @escaping (Result<Tournament, Error>) -> Void) {
+    static func createTournament(
+        sportId: Int64,
+        maxTeams: Int,
+        numberOfRounds: Int,
+        winnerId: Int64? = nil,
+        completion: @escaping (Result<Tournament, Error>) -> Void
+    ) {
+        let req = TournamentRequest(sportId: sportId, winnerId: winnerId, maxTeams: maxTeams, numberOfRounds: numberOfRounds)
+
         let url = baseURL.appendingPathComponent("tournaments")
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        
-        do {
-            let encoder = JSONEncoder()
-            let body = try encoder.encode(tournament)
-            request.httpBody = body
-        } catch {
-            completion(.failure(error))
-            return
-        }
-        
+
+        do { request.httpBody = try JSONEncoder().encode(req) }
+        catch { completion(.failure(error)); return }
+
         URLSession.shared.dataTask(with: request) { data, _, error in
-            if let error = error {
-                completion(.failure(error))
-                return
-            }
-            guard let data = data else {
-                completion(.failure(NSError(domain: "No data", code: -1)))
-                return
-            }
+            if let error = error { completion(.failure(error)); return }
+            guard let data = data else { completion(.failure(NSError(domain: "No data", code: -1))); return }
             do {
                 let created = try JSONDecoder().decode(Tournament.self, from: data)
                 completion(.success(created))
-            } catch {
-                completion(.failure(error))
-            }
+            } catch { completion(.failure(error)) }
         }.resume()
     }
+
 
     // MARK: - User
     static func getUsers(completion: @escaping (Result<[User], Error>) -> Void) {
@@ -435,37 +459,39 @@ class APIService {
         }.resume()
     }
 
-    static func createUser(_ user: User, completion: @escaping (Result<User, Error>) -> Void) {
+    static func createUser(
+        firstName: String,
+        lastName: String,
+        email: String,
+        schoolId: Int64,
+        userType: String,
+        phoneNumber: String? = nil,
+        completion: @escaping (Result<User, Error>) -> Void
+    ) {
+        let req = UserRequest(
+            firstName: firstName,
+            lastName: lastName,
+            email: email,
+            phoneNumber: phoneNumber,
+            schoolId: schoolId,
+            userType: userType
+        )
+
         let url = baseURL.appendingPathComponent("users")
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        
-        do {
-            let encoder = JSONEncoder()
-            let body = try encoder.encode(user)
-            request.httpBody = body
-        } catch {
-            completion(.failure(error))
-            return
-        }
-        
+
+        do { request.httpBody = try JSONEncoder().encode(req) }
+        catch { completion(.failure(error)); return }
+
         URLSession.shared.dataTask(with: request) { data, _, error in
-            if let error = error {
-                completion(.failure(error))
-                return
-            }
-            guard let data = data else {
-                completion(.failure(NSError(domain: "No data", code: -1)))
-                return
-            }
+            if let error = error { completion(.failure(error)); return }
+            guard let data = data else { completion(.failure(NSError(domain: "No data", code: -1))); return }
             do {
                 let created = try JSONDecoder().decode(User.self, from: data)
                 completion(.success(created))
-            } catch {
-                completion(.failure(error))
-            }
+            } catch { completion(.failure(error)) }
         }.resume()
     }
-
 }

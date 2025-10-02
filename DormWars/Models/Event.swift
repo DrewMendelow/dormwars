@@ -8,8 +8,7 @@
 import Foundation
 
 class Event: Codable {
-    
-    var eventId: Int
+    var eventId: Int64
     var location: String?
     var datetime: Date
     var sport: Sport
@@ -21,10 +20,10 @@ class Event: Codable {
     var loser: EventTeam?
     var tournament: Tournament?
     var roundNumber: Int?
-    var nextEventId: Int?
+    var nextEventId: Int64?
     var eventName: String
     
-    init(eventId: Int, location: String? = nil, datetime: Date, sport: Sport, isTournamentGame: Bool, status: String, shortDescription: String, longDescription: String, winner: EventTeam? = nil, loser: EventTeam? = nil, tournament: Tournament? = nil, roundNumber: Int? = nil, nextEventId: Int? = nil, eventName: String) {
+    init(eventId: Int64, location: String? = nil, datetime: Date, sport: Sport, isTournamentGame: Bool, status: String, shortDescription: String, longDescription: String, winner: EventTeam? = nil, loser: EventTeam? = nil, tournament: Tournament? = nil, roundNumber: Int? = nil, nextEventId: Int64? = nil, eventName: String) {
         self.eventId = eventId
         self.location = location
         self.datetime = datetime
