@@ -69,7 +69,9 @@ struct EventsTab: View {
                     .padding(.vertical, 20)
                 }
                 .onAppear {
-                    viewModel.fetchEvents()
+                    Task {
+                        try await viewModel.fetchEvents()
+                    }
                 }
 
                 // MARK: - Event Detail Overlay
