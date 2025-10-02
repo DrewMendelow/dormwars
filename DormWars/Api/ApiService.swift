@@ -218,27 +218,36 @@ class APIService {
 
 
     // MARK: - School
-    static func getSchools(completion: @escaping (Result<[School], Error>) -> Void) {
+    static func getSchools() async throws -> [School] {
         let url = baseURL.appendingPathComponent("schools")
-        
-        URLSession.shared.dataTask(with: url) { data, _, error in
-            if let error = error {
-                completion(.failure(error))
-                return
-            }
-            guard let data = data else {
-                completion(.failure(NSError(domain: "No data", code: -1)))
-                return
-            }
-            do {
-                let decoder = JSONDecoder()
-                let schools = try decoder.decode([School].self, from: data)
-                completion(.success(schools))
-            } catch {
-                completion(.failure(error))
-            }
-        }.resume()
+        let (data, _) = try await URLSession.shared.data(from: url)
+        let decoder = JSONDecoder()
+        return try decoder.decode([School].self, from: data)
     }
+
+//    static func getSchools() -> [School] {
+//        let url = baseURL.appendingPathComponent("schools")
+//        
+//        URLSession.shared.dataTask(with: url) { data, _, error in
+//            if let error = error {
+////                completion(.failure(error))
+//                return
+//            }
+//            guard let data = data else {
+////                completion(.failure(NSError(domain: "No data", code: -1)))
+//                return
+//            }
+//            do {
+//                let decoder = JSONDecoder()
+//                let schools = try decoder.decode([School].self, from: data)
+//                return schools
+////                completion(.success(schools))
+//            } catch {
+//                return []
+////                completion(.failure(error))
+//            }
+//        }.resume()
+//    }
 
     static func createSchool(
         schoolName: String,
@@ -495,3 +504,4 @@ class APIService {
         }.resume()
     }
 }
+
