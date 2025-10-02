@@ -10,13 +10,15 @@ class Tournament: Codable {
     var winner: EventTeam?
     var maxTeams: Int
     var numberOfRounds: Int
+    var tournamentName: String
     
-    init(tournamentId: Int64, sport: Sport, winner: EventTeam? = nil, maxTeams: Int, numberOfRounds: Int) {
+    init(tournamentId: Int64, sport: Sport, winner: EventTeam? = nil, maxTeams: Int, numberOfRounds: Int, tournamentName: String) {
         self.tournamentId = tournamentId
         self.sport = sport
         self.winner = winner
         self.maxTeams = maxTeams
         self.numberOfRounds = numberOfRounds
+        self.tournamentName = tournamentName
     }
 }
 

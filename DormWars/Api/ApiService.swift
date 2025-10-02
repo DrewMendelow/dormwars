@@ -36,9 +36,8 @@ class APIService {
         tournamentId: Int64? = nil,
         roundNumber: Int? = nil,
         nextEventId: Int64? = nil,
-        completion: @escaping (Result<Event, Error>) -> Void
-    ) {
-        let event = EventRequest(
+    ) async throws -> Bool {
+        let req = EventRequest(
             location: location,
             datetime: datetime,
             sportId: sportId,
@@ -58,35 +57,22 @@ class APIService {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-
         do {
             let encoder = JSONEncoder()
             encoder.dateEncodingStrategy = .iso8601
-            let body = try encoder.encode(event)
+            let body = try encoder.encode(req)
             request.httpBody = body
         } catch {
-            completion(.failure(error))
-            return
+            return false
         }
 
-        URLSession.shared.dataTask(with: request) { data, _, error in
-            if let error = error {
-                completion(.failure(error))
-                return
-            }
+        let (_, response) = try await URLSession.shared.data(for: request)
 
-            guard let data = data else {
-                completion(.failure(NSError(domain: "No data", code: -1)))
-                return
-            }
+        guard let httpResponse = response as? HTTPURLResponse else {
+            return false
+        }
 
-            do {
-                let createdEvent = try JSONDecoder().decode(Event.self, from: data)
-                completion(.success(createdEvent))
-            } catch {
-                completion(.failure(error))
-            }
-        }.resume()
+        return (200...299).contains(httpResponse.statusCode)
     }
 
     // MARK: - EventTeam
@@ -98,14 +84,13 @@ class APIService {
     }
 
     static func createEventTeam(
-        eventId: Int64,
+        eventId: Int64? = nil,
         teamId: Int64,
         isTournamentTeam: Bool,
         active: Bool,
         tournamentId: Int64? = nil,
-        completion: @escaping (Result<EventTeam, Error>) -> Void
-    ) {
-        let eventTeamReq = EventTeamRequest(
+    ) async throws -> Bool {
+        let req = EventTeamRequest(
             eventId: eventId,
             teamId: teamId,
             isTournamentTeam: isTournamentTeam,
@@ -117,22 +102,15 @@ class APIService {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = try JSONEncoder().encode(req)
 
-        do {
-            request.httpBody = try JSONEncoder().encode(eventTeamReq)
-        } catch {
-            completion(.failure(error))
-            return
+        let (_, response) = try await URLSession.shared.data(for: request)
+
+        guard let httpResponse = response as? HTTPURLResponse else {
+            return false
         }
 
-        URLSession.shared.dataTask(with: request) { data, _, error in
-            if let error = error { completion(.failure(error)); return }
-            guard let data = data else { completion(.failure(NSError(domain: "No data", code: -1))); return }
-            do {
-                let created = try JSONDecoder().decode(EventTeam.self, from: data)
-                completion(.success(created))
-            } catch { completion(.failure(error)) }
-        }.resume()
+        return (200...299).contains(httpResponse.statusCode)
     }
 
 
@@ -147,25 +125,21 @@ class APIService {
     static func createRegisterUser(
         eventTeamId: Int64,
         userId: Int64,
-        completion: @escaping (Result<RegisterUser, Error>) -> Void
-    ) {
+    ) async throws -> Bool {
         let req = RegisterUserRequest(eventTeamId: eventTeamId, userId: userId)
         let url = baseURL.appendingPathComponent("registrations")
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = try JSONEncoder().encode(req)
 
-        do { request.httpBody = try JSONEncoder().encode(req) }
-        catch { completion(.failure(error)); return }
+        let (_, response) = try await URLSession.shared.data(for: request)
 
-        URLSession.shared.dataTask(with: request) { data, _, error in
-            if let error = error { completion(.failure(error)); return }
-            guard let data = data else { completion(.failure(NSError(domain: "No data", code: -1))); return }
-            do {
-                let created = try JSONDecoder().decode(RegisterUser.self, from: data)
-                completion(.success(created))
-            } catch { completion(.failure(error)) }
-        }.resume()
+        guard let httpResponse = response as? HTTPURLResponse else {
+            return false
+        }
+
+        return (200...299).contains(httpResponse.statusCode)
     }
 
 
@@ -185,8 +159,7 @@ class APIService {
         primaryColor: String? = nil,
         secondaryColor: String? = nil,
         schoolLogo: String? = nil,
-        completion: @escaping (Result<School, Error>) -> Void
-    ) {
+    ) async throws -> Bool {
         let req = SchoolRequest(
             schoolName: schoolName,
             city: city,
@@ -201,18 +174,15 @@ class APIService {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = try JSONEncoder().encode(req)
 
-        do { request.httpBody = try JSONEncoder().encode(req) }
-        catch { completion(.failure(error)); return }
+        let (_, response) = try await URLSession.shared.data(for: request)
 
-        URLSession.shared.dataTask(with: request) { data, _, error in
-            if let error = error { completion(.failure(error)); return }
-            guard let data = data else { completion(.failure(NSError(domain: "No data", code: -1))); return }
-            do {
-                let created = try JSONDecoder().decode(School.self, from: data)
-                completion(.success(created))
-            } catch { completion(.failure(error)) }
-        }.resume()
+        guard let httpResponse = response as? HTTPURLResponse else {
+            return false
+        }
+
+        return (200...299).contains(httpResponse.statusCode)
     }
 
 
@@ -229,8 +199,7 @@ class APIService {
         playersPerTeam: Int,
         description: String? = nil,
         abbreviation: String? = nil,
-        completion: @escaping (Result<Sport, Error>) -> Void
-    ) {
+    ) async throws -> Bool {
         let req = SportRequest(
             sportName: sportName,
             description: description,
@@ -242,18 +211,15 @@ class APIService {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = try JSONEncoder().encode(req)
 
-        do { request.httpBody = try JSONEncoder().encode(req) }
-        catch { completion(.failure(error)); return }
+        let (_, response) = try await URLSession.shared.data(for: request)
 
-        URLSession.shared.dataTask(with: request) { data, _, error in
-            if let error = error { completion(.failure(error)); return }
-            guard let data = data else { completion(.failure(NSError(domain: "No data", code: -1))); return }
-            do {
-                let created = try JSONDecoder().decode(Sport.self, from: data)
-                completion(.success(created))
-            } catch { completion(.failure(error)) }
-        }.resume()
+        guard let httpResponse = response as? HTTPURLResponse else {
+            return false
+        }
+
+        return (200...299).contains(httpResponse.statusCode)
     }
 
 
@@ -269,26 +235,22 @@ class APIService {
         teamName: String,
         schoolId: Int64,
         active: Bool,
-        completion: @escaping (Result<Team, Error>) -> Void
-    ) {
+    ) async throws -> Bool {
         let req = TeamRequest(teamName: teamName, schoolId: schoolId, active: active)
 
         let url = baseURL.appendingPathComponent("teams")
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = try JSONEncoder().encode(req)
 
-        do { request.httpBody = try JSONEncoder().encode(req) }
-        catch { completion(.failure(error)); return }
+        let (_, response) = try await URLSession.shared.data(for: request)
 
-        URLSession.shared.dataTask(with: request) { data, _, error in
-            if let error = error { completion(.failure(error)); return }
-            guard let data = data else { completion(.failure(NSError(domain: "No data", code: -1))); return }
-            do {
-                let created = try JSONDecoder().decode(Team.self, from: data)
-                completion(.success(created))
-            } catch { completion(.failure(error)) }
-        }.resume()
+        guard let httpResponse = response as? HTTPURLResponse else {
+            return false
+        }
+
+        return (200...299).contains(httpResponse.statusCode)
     }
 
 
@@ -305,27 +267,31 @@ class APIService {
         maxTeams: Int,
         numberOfRounds: Int,
         winnerId: Int64? = nil,
-        completion: @escaping (Result<Tournament, Error>) -> Void
-    ) {
-        let req = TournamentRequest(sportId: sportId, winnerId: winnerId, maxTeams: maxTeams, numberOfRounds: numberOfRounds)
+        tournamentName: String
+    ) async throws -> Bool {
+        let req = TournamentRequest(
+            sportId: sportId,
+            winnerId: winnerId,
+            maxTeams: maxTeams,
+            numberOfRounds: numberOfRounds,
+            tournamentName: tournamentName
+        )
 
         let url = baseURL.appendingPathComponent("tournaments")
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = try JSONEncoder().encode(req)
 
-        do { request.httpBody = try JSONEncoder().encode(req) }
-        catch { completion(.failure(error)); return }
+        let (_, response) = try await URLSession.shared.data(for: request)
 
-        URLSession.shared.dataTask(with: request) { data, _, error in
-            if let error = error { completion(.failure(error)); return }
-            guard let data = data else { completion(.failure(NSError(domain: "No data", code: -1))); return }
-            do {
-                let created = try JSONDecoder().decode(Tournament.self, from: data)
-                completion(.success(created))
-            } catch { completion(.failure(error)) }
-        }.resume()
+        guard let httpResponse = response as? HTTPURLResponse else {
+            return false
+        }
+
+        return (200...299).contains(httpResponse.statusCode)
     }
+
 
 
     // MARK: - User
@@ -343,8 +309,7 @@ class APIService {
         schoolId: Int64,
         userType: String,
         phoneNumber: String? = nil,
-        completion: @escaping (Result<User, Error>) -> Void
-    ) {
+    ) async throws -> Bool {
         let req = UserRequest(
             firstName: firstName,
             lastName: lastName,
@@ -358,18 +323,15 @@ class APIService {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = try JSONEncoder().encode(req)
 
-        do { request.httpBody = try JSONEncoder().encode(req) }
-        catch { completion(.failure(error)); return }
+        let (_, response) = try await URLSession.shared.data(for: request)
 
-        URLSession.shared.dataTask(with: request) { data, _, error in
-            if let error = error { completion(.failure(error)); return }
-            guard let data = data else { completion(.failure(NSError(domain: "No data", code: -1))); return }
-            do {
-                let created = try JSONDecoder().decode(User.self, from: data)
-                completion(.success(created))
-            } catch { completion(.failure(error)) }
-        }.resume()
+        guard let httpResponse = response as? HTTPURLResponse else {
+            return false
+        }
+
+        return (200...299).contains(httpResponse.statusCode)
     }
 }
 

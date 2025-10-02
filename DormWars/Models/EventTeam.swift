@@ -6,13 +6,13 @@
 //
 class EventTeam: Codable {
     var eventTeamId: Int64
-    var eventId: Int64
+    var eventId: Int64?
     var team: Team
     var isTournamentTeam: Bool
     var tournament: Tournament?
     var active: Bool
     
-    init(eventTeamId: Int64, eventId: Int64, team: Team, isTournamentTeam: Bool, tournament: Tournament? = nil, active: Bool) {
+    init(eventTeamId: Int64, eventId: Int64? = nil, team: Team, isTournamentTeam: Bool, tournament: Tournament? = nil, active: Bool) {
         self.eventTeamId = eventTeamId
         self.eventId = eventId
         self.team = team
