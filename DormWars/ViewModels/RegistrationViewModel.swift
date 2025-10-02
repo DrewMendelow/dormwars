@@ -19,7 +19,7 @@ class RegistrationViewModel: ObservableObject {
             return
         }
         
-        APIService.createRegisterUser(eventTeamId: eventTeam.eventTeamId, userId: user.userId, completion: {_ in})
+        let result = try await APIService.createRegisterUser(eventTeamId: eventTeam.eventTeamId, userId: user.userId)
         
         print("User \(user.firstName) \(user.lastName) has been registered for team \(eventTeam.team.teamName)")
     }

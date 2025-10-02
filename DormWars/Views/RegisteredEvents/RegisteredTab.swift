@@ -13,25 +13,44 @@ struct RegisteredTab: View {
 //        Text("Registered Tab")
         VStack {
             Button("Create Team") {
-                APIService.createTeam(teamName: "Smith", schoolId: 1, active: true, completion: { _ in })
+                Task {
+                    try await APIService.createTeam(teamName: "Harrison", schoolId: 1, active: true)
+                }
             }
             Button("Create Register User") {
-                APIService.createRegisterUser(eventTeamId: 1, userId: 1, completion: {_ in })
+                Task {
+                    try await APIService.createRegisterUser(eventTeamId: 2, userId: 1)
+                }
             }
             Button("Create School") {
-                APIService.createSchool(schoolName: "Georgia", active: false, completion: {_ in })
+                Task {
+                    try await APIService.createSchool(schoolName: "Georgia State", active: true)
+                }
             }
             Button("Create Sport") {
-                APIService.createSport(sportName: "Ping Pong", playersPerTeam: 2, completion: {_ in })
+                Task {
+                    try await APIService.createSport(sportName: "Tug of War", playersPerTeam: 50)
+                }
             }
             Button("Create Tournament") {
-                APIService.createTournament(sportId: 1, maxTeams: 8, numberOfRounds: 4, completion: {_ in })
+                Task {
+                    try await APIService.createTournament(sportId: 2, maxTeams: 8, numberOfRounds: 4, tournamentName: "Flag Football Tournament")
+                }
             }
             Button("Create User") {
-                APIService.createUser(firstName: "Wow", lastName: "Grape", email: "grappe@gmail.com", schoolId: 1, userType: "player", completion: {_ in })
+                Task {
+                    try await APIService.createUser(firstName: "test", lastName: "test", email: "test@gmail.com", schoolId: 1, userType: "player")
+                }
             }
             Button("Create Event") {
-                APIService.createEvent(datetime: Date(), sportId: 2, isTournamentGame: false, status: "upcoming", shortDescription: "Flag Football 7v7", longDescription: "Flag Football Game between Field and Smith", eventName: "Field v Smith Flag Football", completion: {_ in})
+                Task {
+                    try await APIService.createEvent(datetime: Date(), sportId: 1, isTournamentGame: false, status: "upcoming", shortDescription: "Test soccer event", longDescription: "Flag Football Game between Field and Smith", eventName: "test event")
+                }
+            }
+            Button("Create Event Team") {
+                Task {
+                    try await APIService.createEventTeam(teamId: 3, isTournamentTeam: true, active: true, tournamentId: 3)
+                }
             }
         }
     }
