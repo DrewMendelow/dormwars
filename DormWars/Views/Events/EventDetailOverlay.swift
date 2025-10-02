@@ -71,6 +71,9 @@ struct EventDetailOverlay: View {
 
                         Button(action: {
                             // Register stuff
+                            Task {
+                                try await RegistrationViewModel().register(user: SessionManager.shared.currentUser!, eventTeam: try await APIService.getEventTeams().first!)
+                            }
                         }) {
                             Label("Register for Event", systemImage: "checkmark.circle")
                                 .font(.headline)

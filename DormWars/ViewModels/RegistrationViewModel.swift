@@ -13,21 +13,19 @@ class RegistrationViewModel: ObservableObject {
     
     @Published private(set) var registrations: [RegisterUser] = []
     
-    func register(user: User, eventTeam: EventTeam) {
-        guard !isRegistered(user: user, eventTeam: eventTeam) else {
+    func register(user: User, eventTeam: EventTeam) async throws {
+        guard try await !isRegistered(user: user, eventTeam: eventTeam) else {
             print("User \(user.firstName) \(user.lastName) is already registered for team \(eventTeam.team.teamName)")
             return
         }
         
-        let newId = (registrations.last?.registerUserId ?? 0) + 1
-        let registration = RegisterUser(registerUserId: newId, eventTeam: eventTeam, user: user)
-        registrations.append(registration)
+        APIService.createRegisterUser(eventTeamId: eventTeam.eventTeamId, userId: user.userId, completion: {_ in})
         
         print("User \(user.firstName) \(user.lastName) has been registered for team \(eventTeam.team.teamName)")
     }
     
-    func isRegistered(user: User, eventTeam: EventTeam) -> Bool {
-        return registrations.contains(where: { reg in
+    func isRegistered(user: User, eventTeam: EventTeam) async throws -> Bool {
+        return try await APIService.getRegisterUsers().contains(where: { reg in
             reg.user.userId == user.userId && reg.eventTeam.eventTeamId == eventTeam.eventTeamId
         })
     }
