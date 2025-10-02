@@ -20,4 +20,6 @@ class EventsViewModel: ObservableObject {
         events = try await APIService.getEvents()
         isLoading = false
     }
+    
+    
 }

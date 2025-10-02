@@ -43,15 +43,16 @@ struct EventsTab: View {
                     VStack(spacing: 20) {
 
                         // MARK: - Page Header
-                        VStack(alignment: .leading, spacing: 6) {
-                            Text("DormWars Events")
+                        HStack(alignment: .center, spacing: 10) {
+                            Spacer()
+                            Text("Events")
                                 .font(.largeTitle.bold())
-                            Text("Check out all upcoming competitions and activities")
-                                .font(.subheadline)
-                                .foregroundColor(.gray)
+                            Spacer()
+                            
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.horizontal)
+                        
 
                         // MARK: - Search + Filter
                         EventSearchFilterBar(searchText: $searchText, filterCategory: $filterCategory, categories: categories)
@@ -65,7 +66,7 @@ struct EventsTab: View {
                             }
                         }
                     }
-                    .padding(.vertical, 32)
+                    .padding(.vertical, 20)
                 }
                 .onAppear {
                     Task {

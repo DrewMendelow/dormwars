@@ -22,4 +22,5 @@ class User: Codable {
         self.school = school
         self.userType = userType
     }
+
 }

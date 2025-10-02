@@ -11,6 +11,8 @@ struct EventDetailOverlay: View {
     let width: CGFloat
     let height: CGFloat
     
+    
+    
     var body: some View {
         if let event = selectedEvent {
             ZStack {
@@ -26,14 +28,8 @@ struct EventDetailOverlay: View {
                     // Top Bar
                     ZStack(alignment: .topTrailing) {
                         Rectangle()
-                            .fill(
-                                LinearGradient(
-                                    gradient: Gradient(colors: [Color.orange, Color.yellow]),
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                )
-                            )
-                            .frame(height: 140)
+                            .fill(SportColors.gradient(for: event.sport.sportName))
+                            .frame(height: 90)
                             .cornerRadius(20, corners: [.topLeft, .topRight])
 
                         Button(action: {
@@ -74,7 +70,10 @@ struct EventDetailOverlay: View {
                         Spacer()
 
                         Button(action: {
-                            // Registration logic
+                            // Register stuff
+                            Task {
+                                try await RegistrationViewModel().register(user: SessionManager.shared.currentUser!, eventTeam: try await APIService.getEventTeams().first!)
+                            }
                         }) {
                             Label("Register for Event", systemImage: "checkmark.circle")
                                 .font(.headline)
@@ -92,6 +91,10 @@ struct EventDetailOverlay: View {
                 .background(Color.white)
                 .cornerRadius(20)
                 .shadow(radius: 14)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 20)
+                        .stroke(Color.gray.opacity(0.4), lineWidth: 5)
+                )
                 .transition(.move(edge: .bottom))
             }
         }

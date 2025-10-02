@@ -14,17 +14,13 @@ struct EventCard: View {
     let cardSize: CGFloat
     
     var body: some View {
+
         VStack(spacing: 0) {
             // Top Bar
             ZStack {
                 Rectangle()
-                    .fill(
-                        LinearGradient(
-                            gradient: Gradient(colors: [Color.orange, Color.yellow]),
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
+                    .fill(SportColors.gradient(for: event.sport.sportName))
+                    .overlay(Color.white.opacity(0.1))
                     .cornerRadius(20, corners: [.topLeft, .topRight])
 
                 HStack {
@@ -48,7 +44,7 @@ struct EventCard: View {
                     .font(.subheadline)
                     .padding(.horizontal, 10)
                     .padding(.vertical, 6)
-                    .background(Color.orange.opacity(0.15))
+                    .background(SportColors.primaryColor(for: event.sport.sportName).opacity(0.15))
                     .cornerRadius(10)
 
                     Label(event.location ?? "TBD", systemImage: "mappin.and.ellipse")
@@ -69,13 +65,21 @@ struct EventCard: View {
             .frame(maxWidth: .infinity, alignment: .topLeading)
             .background(Color.white)
             .cornerRadius(20, corners: [.bottomLeft, .bottomRight])
-            .onTapGesture {
-                withAnimation(.spring()) {
-                    selectedEvent = event
-                }
-            }
+
         }
         .frame(width: cardSize)
         .shadow(color: .black.opacity(0.08), radius: 8, x: 0, y: 4)
+        .background(Color.white)
+        .cornerRadius(20)
+        .overlay(
+            RoundedRectangle(cornerRadius: 20)
+                .stroke(SportColors.primaryColor(for: event.sport.sportName).opacity(0.2), lineWidth: 2)
+        )
+        .onTapGesture {
+            withAnimation(.spring()) {
+                selectedEvent = event
+            }
+        }
     }
+    
 }

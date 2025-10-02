@@ -41,3 +41,8 @@ class Event: Codable {
     }
 }
 
+extension Event {
+    static func == (lhs: Event, rhs: Event) -> Bool {
+        return lhs.eventId == rhs.eventId
+    }
+}
