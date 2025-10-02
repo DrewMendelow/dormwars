@@ -10,7 +10,8 @@ import SwiftData
 
 struct ProfileTab: View {
     var body: some View {
-        Text("Profile Tab")
+        // Example use of currentUser
+        Text("\(SessionManager.shared.currentUser?.firstName ?? "First") \(SessionManager.shared.currentUser?.lastName ?? "Last")")
     }
 }
 

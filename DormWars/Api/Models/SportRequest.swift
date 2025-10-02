@@ -1,18 +1,16 @@
 //
-//  Sport.swift
+//  SportRequest.swift
 //  DormWars
 //
-//  Created by Drew Mendelow on 9/27/25.
+//  Created by Drew Mendelow on 10/1/25.
 //
-class Sport: Codable {
-    var sportId: Int64
+class SportRequest: Codable {
     var sportName: String
     var description: String?
     var abbreviation: String?
     var playersPerTeam: Int
     
-    init(sportId: Int64, sportName: String, description: String? = nil, abbreviation: String? = nil, playersPerTeam: Int) {
-        self.sportId = sportId
+    init(sportName: String, description: String? = nil, abbreviation: String? = nil, playersPerTeam: Int) {
         self.sportName = sportName
         self.description = description
         self.abbreviation = abbreviation
