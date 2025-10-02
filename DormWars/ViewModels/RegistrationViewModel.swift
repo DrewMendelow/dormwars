@@ -11,16 +11,16 @@ internal import Combine
 @MainActor
 class RegistrationViewModel: ObservableObject {
     
-    @Published private(set) var registrations: [RegisterUser] = []
+    @Published private(set) var registrations: [RegisterUserRequest] = []
     
     func register(user: User, eventTeam: EventTeam) {
         guard !isRegistered(user: user, eventTeam: eventTeam) else {
             print("User \(user.firstName) \(user.lastName) is already registered for team \(eventTeam.team.teamName)")
             return
         }
+            
         
-        let newId = (registrations.last?.registerUserId ?? 0) + 1
-        let registration = RegisterUser(registerUserId: newId, eventTeam: eventTeam, user: user)
+        let registration = RegisterUserRequest(eventTeamId: eventTeam.eventTeamId, userId: user.userId)
         registrations.append(registration)
         
         print("User \(user.firstName) \(user.lastName) has been registered for team \(eventTeam.team.teamName)")
@@ -28,13 +28,13 @@ class RegistrationViewModel: ObservableObject {
     
     func isRegistered(user: User, eventTeam: EventTeam) -> Bool {
         return registrations.contains(where: { reg in
-            reg.user.userId == user.userId && reg.eventTeam.eventTeamId == eventTeam.eventTeamId
+            reg.userId == user.userId && reg.eventTeamId == eventTeam.eventTeamId
         })
     }
     
     func unregister(user: User, eventTeam: EventTeam) {
         registrations.removeAll { reg in
-            reg.user.userId == user.userId && reg.eventTeam.eventTeamId == eventTeam.eventTeamId
+            reg.userId == user.userId && reg.eventTeamId == eventTeam.eventTeamId
         }
         print("User \(user.firstName) \(user.lastName) unregistered from team \(eventTeam.team.teamName)")
     }

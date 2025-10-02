@@ -70,7 +70,8 @@ struct EventDetailOverlay: View {
                         Spacer()
 
                         Button(action: {
-                            // Register stuff
+                            
+                            //RegistrationViewModel().register(user: SessionManager.shared.currentUser!, eventTeam: )
                         }) {
                             Label("Register for Event", systemImage: "checkmark.circle")
                                 .font(.headline)

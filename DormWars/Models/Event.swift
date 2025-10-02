@@ -8,7 +8,8 @@
 import Foundation
 
 class Event: Codable, Equatable {
-    var eventId: Int
+    var eventId: Int64
+    var location: String?
     var datetime: Date
     var sport: Sport
     var isTournamentGame: Bool
