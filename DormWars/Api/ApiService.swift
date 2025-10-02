@@ -11,33 +11,15 @@ class APIService {
     static let baseURL = URL(string: "https://dormwarsapi.onrender.com/api/")!
 
     // MARK: - Event
-    static func getEvents(completion: @escaping (Result<[Event], Error>) -> Void) {
+    static func getEvents() async throws -> [Event] {
         let url = baseURL.appendingPathComponent("events")
-
-        URLSession.shared.dataTask(with: url) { data, _, error in
-            if let error = error {
-                completion(.failure(error))
-                return
-            }
-
-            guard let data = data else {
-                completion(.failure(NSError(domain: "No data", code: -1)))
-                return
-            }
-
-            do {
-                let decoder = JSONDecoder()
-                let formatter = DateFormatter()
-                formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
-                formatter.timeZone = TimeZone(secondsFromGMT: 0)
-                decoder.dateDecodingStrategy = .formatted(formatter)
-                
-                let events = try decoder.decode([Event].self, from: data)
-                completion(.success(events))
-            } catch {
-                completion(.failure(error))
-            }
-        }.resume()
+        let (data, _) = try await URLSession.shared.data(from: url)
+        let decoder = JSONDecoder()
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+        formatter.timeZone = TimeZone(secondsFromGMT: 0)
+        decoder.dateDecodingStrategy = .formatted(formatter)
+        return try decoder.decode([Event].self, from: data)
     }
 
     static func createEvent(
@@ -108,26 +90,11 @@ class APIService {
     }
 
     // MARK: - EventTeam
-    static func getEventTeams(completion: @escaping (Result<[EventTeam], Error>) -> Void) {
+    static func getEventTeams() async throws -> [EventTeam] {
         let url = baseURL.appendingPathComponent("event-teams")
-        
-        URLSession.shared.dataTask(with: url) { data, _, error in
-            if let error = error {
-                completion(.failure(error))
-                return
-            }
-            guard let data = data else {
-                completion(.failure(NSError(domain: "No data", code: -1)))
-                return
-            }
-            do {
-                let decoder = JSONDecoder()
-                let eventTeams = try decoder.decode([EventTeam].self, from: data)
-                completion(.success(eventTeams))
-            } catch {
-                completion(.failure(error))
-            }
-        }.resume()
+        let (data, _) = try await URLSession.shared.data(from: url)
+        let decoder = JSONDecoder()
+        return try decoder.decode([EventTeam].self, from: data)
     }
 
     static func createEventTeam(
@@ -170,26 +137,11 @@ class APIService {
 
 
     // MARK: - RegisterUser
-    static func getRegisterUsers(completion: @escaping (Result<[RegisterUser], Error>) -> Void) {
+    static func getRegisterUsers() async throws -> [RegisterUser] {
         let url = baseURL.appendingPathComponent("registrations")
-        
-        URLSession.shared.dataTask(with: url) { data, _, error in
-            if let error = error {
-                completion(.failure(error))
-                return
-            }
-            guard let data = data else {
-                completion(.failure(NSError(domain: "No data", code: -1)))
-                return
-            }
-            do {
-                let decoder = JSONDecoder()
-                let users = try decoder.decode([RegisterUser].self, from: data)
-                completion(.success(users))
-            } catch {
-                completion(.failure(error))
-            }
-        }.resume()
+        let (data, _) = try await URLSession.shared.data(from: url)
+        let decoder = JSONDecoder()
+        return try decoder.decode([RegisterUser].self, from: data)
     }
 
     static func createRegisterUser(
@@ -224,30 +176,6 @@ class APIService {
         let decoder = JSONDecoder()
         return try decoder.decode([School].self, from: data)
     }
-
-//    static func getSchools() -> [School] {
-//        let url = baseURL.appendingPathComponent("schools")
-//        
-//        URLSession.shared.dataTask(with: url) { data, _, error in
-//            if let error = error {
-////                completion(.failure(error))
-//                return
-//            }
-//            guard let data = data else {
-////                completion(.failure(NSError(domain: "No data", code: -1)))
-//                return
-//            }
-//            do {
-//                let decoder = JSONDecoder()
-//                let schools = try decoder.decode([School].self, from: data)
-//                return schools
-////                completion(.success(schools))
-//            } catch {
-//                return []
-////                completion(.failure(error))
-//            }
-//        }.resume()
-//    }
 
     static func createSchool(
         schoolName: String,
@@ -289,26 +217,11 @@ class APIService {
 
 
     // MARK: - Sport
-    static func getSports(completion: @escaping (Result<[Sport], Error>) -> Void) {
+    static func getSports() async throws -> [Sport] {
         let url = baseURL.appendingPathComponent("sports")
-        
-        URLSession.shared.dataTask(with: url) { data, _, error in
-            if let error = error {
-                completion(.failure(error))
-                return
-            }
-            guard let data = data else {
-                completion(.failure(NSError(domain: "No data", code: -1)))
-                return
-            }
-            do {
-                let decoder = JSONDecoder()
-                let sports = try decoder.decode([Sport].self, from: data)
-                completion(.success(sports))
-            } catch {
-                completion(.failure(error))
-            }
-        }.resume()
+        let (data, _) = try await URLSession.shared.data(from: url)
+        let decoder = JSONDecoder()
+        return try decoder.decode([Sport].self, from: data)
     }
 
     static func createSport(
@@ -345,26 +258,11 @@ class APIService {
 
 
     // MARK: - Team
-    static func getTeams(completion: @escaping (Result<[Team], Error>) -> Void) {
+    static func getTeams() async throws -> [Team] {
         let url = baseURL.appendingPathComponent("teams")
-        
-        URLSession.shared.dataTask(with: url) { data, _, error in
-            if let error = error {
-                completion(.failure(error))
-                return
-            }
-            guard let data = data else {
-                completion(.failure(NSError(domain: "No data", code: -1)))
-                return
-            }
-            do {
-                let decoder = JSONDecoder()
-                let teams = try decoder.decode([Team].self, from: data)
-                completion(.success(teams))
-            } catch {
-                completion(.failure(error))
-            }
-        }.resume()
+        let (data, _) = try await URLSession.shared.data(from: url)
+        let decoder = JSONDecoder()
+        return try decoder.decode([Team].self, from: data)
     }
 
     static func createTeam(
@@ -395,26 +293,11 @@ class APIService {
 
 
     // MARK: - Tournament
-    static func getTournaments(completion: @escaping (Result<[Tournament], Error>) -> Void) {
+    static func getTournaments() async throws -> [Tournament] {
         let url = baseURL.appendingPathComponent("tournaments")
-        
-        URLSession.shared.dataTask(with: url) { data, _, error in
-            if let error = error {
-                completion(.failure(error))
-                return
-            }
-            guard let data = data else {
-                completion(.failure(NSError(domain: "No data", code: -1)))
-                return
-            }
-            do {
-                let decoder = JSONDecoder()
-                let tournaments = try decoder.decode([Tournament].self, from: data)
-                completion(.success(tournaments))
-            } catch {
-                completion(.failure(error))
-            }
-        }.resume()
+        let (data, _) = try await URLSession.shared.data(from: url)
+        let decoder = JSONDecoder()
+        return try decoder.decode([Tournament].self, from: data)
     }
 
     static func createTournament(
@@ -446,26 +329,11 @@ class APIService {
 
 
     // MARK: - User
-    static func getUsers(completion: @escaping (Result<[User], Error>) -> Void) {
+    static func getUsers() async throws -> [User] {
         let url = baseURL.appendingPathComponent("users")
-        
-        URLSession.shared.dataTask(with: url) { data, _, error in
-            if let error = error {
-                completion(.failure(error))
-                return
-            }
-            guard let data = data else {
-                completion(.failure(NSError(domain: "No data", code: -1)))
-                return
-            }
-            do {
-                let decoder = JSONDecoder()
-                let users = try decoder.decode([User].self, from: data)
-                completion(.success(users))
-            } catch {
-                completion(.failure(error))
-            }
-        }.resume()
+        let (data, _) = try await URLSession.shared.data(from: url)
+        let decoder = JSONDecoder()
+        return try decoder.decode([User].self, from: data)
     }
 
     static func createUser(
