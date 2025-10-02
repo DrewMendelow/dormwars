@@ -15,18 +15,9 @@ class EventsViewModel: ObservableObject {
     @Published var errorMessage: String? = nil
     @Published var isLoading: Bool = false
     
-    func fetchEvents() {
+    func fetchEvents() async throws {
         isLoading = true
-        APIService.getEvents { result in
-            DispatchQueue.main.async {
-                switch result {
-                case .success(let events):
-                    self.events = events
-                case .failure(let error):
-                    self.errorMessage = error.localizedDescription
-                }
-                self.isLoading = false
-            }
-        }
+        events = try await APIService.getEvents()
+        isLoading = false
     }
 }
